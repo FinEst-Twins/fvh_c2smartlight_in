@@ -50,8 +50,8 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
-    @app.route("/ocpp/v16/observations", methods=["POST"])
-    def post_vehiclecharge_data():
+    @app.route("/c2/v1/observations", methods=["POST"])
+    def postdata():
 
         try:
             # data = request.get_data()
