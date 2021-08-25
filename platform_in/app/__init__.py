@@ -50,7 +50,7 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
-    @app.route("/c2/v1/observations", methods=["POST"])
+    @app.route("/c2/v1/<id>", methods=["POST"])
     def postdata():
 
         try:
@@ -62,6 +62,17 @@ def create_app(script_info=None):
             # Asynchronously produce a message, the delivery report callback
             # will be triggered from poll() above, or flush() below, when the message has
             # been successfully delivered or failed permanently.
+
+            received_data = json.loads(data)
+
+
+            if "data" in received_data.keys():
+                #received measurement type data
+                key = received_data["n"]
+            elif "ref" in received_data.keys():
+                #received alarm or event type data
+                key = received_data["n"]
+
             producer.send(
                 topic="test.sputhan",
                 key="",
@@ -72,7 +83,7 @@ def create_app(script_info=None):
 
         except Exception as e:
             producer.flush()
-            logging.error("post data error", e)
+            logging.error("post data error", exc_info=True)
             # elastic_apm.capture_exception()
             return failure_response_object, failure_code
 
