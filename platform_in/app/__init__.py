@@ -50,8 +50,46 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
-    @app.route("/c2/v1/<id>", methods=["POST"])
-    def postdata(id):
+    @app.route("/c2/v1/<id>", methods=["PUT"])
+    def putdata(id):
+
+        try:
+            # data = request.get_data()
+            data = request.get_data()
+            logging.info(f"put data goes like : {data[0:200]}")
+            logging.debug(f"put data in json : {json.loads(data)}")
+
+            # Asynchronously produce a message, the delivery report callback
+            # will be triggered from poll() above, or flush() below, when the message has
+            # been successfully delivered or failed permanently.
+
+            received_data = json.loads(data)
+
+
+            if "data" in received_data.keys():
+                #received measurement type data
+                key = received_data["n"]
+            elif "ref" in received_data.keys():
+                #received alarm or event type data
+                key = received_data["n"]
+
+            producer.send(
+                topic="test.sputhan",
+                key="",
+                value=request.get_json(),
+            )
+
+            return success_response_object, success_code
+
+        except Exception as e:
+            producer.flush()
+            logging.error("post data error", exc_info=True)
+            # elastic_apm.capture_exception()
+            return failure_response_object, failure_code
+
+
+    @app.route("/c2/v1", methods=["POST"])
+    def postdata():
 
         try:
             # data = request.get_data()
