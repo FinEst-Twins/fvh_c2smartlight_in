@@ -51,7 +51,7 @@ def create_app(script_info=None):
         return jsonify(health="ok")
 
     @app.route("/c2/v1/<id>", methods=["POST"])
-    def postdata():
+    def postdata(id):
 
         try:
             # data = request.get_data()
