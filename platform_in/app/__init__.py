@@ -50,14 +50,14 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
-    @app.route("/c2/v1/<id>", methods=["PUT"])
+    @app.route("/c2/v1/<id>", methods=["POST"])
     def putdata(id):
 
         try:
             # data = request.get_data()
             data = request.get_data()
-            logging.info(f"put data goes like : {data[0:200]}")
-            logging.debug(f"put data in json : {json.loads(data)}")
+            logging.info(f"post data goes like : {data[0:200]}")
+            logging.debug(f"post data in json : {json.loads(data)}")
 
             # Asynchronously produce a message, the delivery report callback
             # will be triggered from poll() above, or flush() below, when the message has
