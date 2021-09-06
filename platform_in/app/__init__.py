@@ -8,9 +8,16 @@ from flask import jsonify, request
 import json
 import certifi
 from kafka import KafkaProducer
+import sentry_sdk
 
+from sentry_sdk.integrations.flask import FlaskIntegration
 
-from os import path
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        integrations=[FlaskIntegration()]
+    )
+
 
 
 success_response_object = {"status": "success"}
@@ -50,8 +57,13 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
+    @app.route('/debug-sentry')
+    def trigger_error():
+        division_by_zero = 1 / 0
+
+
     @app.route("/c2/v1/<id>", methods=["POST"])
-    def putdata(id):
+    def post_measurement_data(id):
 
         try:
             # data = request.get_data()
@@ -66,16 +78,16 @@ def create_app(script_info=None):
             received_data = json.loads(data)
 
 
-            if "data" in received_data.keys():
-                #received measurement type data
-                key = received_data["n"]
-            elif "ref" in received_data.keys():
-                #received alarm or event type data
-                key = received_data["n"]
+            # if "data" in received_data.keys():
+            #     #received measurement type data
+            #     key = received_data["n"]
+            # elif "ref" in received_data.keys():
+            #     #received alarm or event type data
+            #     key = received_data["n"]
 
             producer.send(
-                topic="test.sputhan",
-                key="",
+                topic="finest.json.c2light",
+                key=id,
                 value=request.get_json(),
             )
 
