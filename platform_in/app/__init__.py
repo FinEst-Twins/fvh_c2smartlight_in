@@ -80,9 +80,10 @@ def create_app(script_info=None):
                 timestamps = bad_json.keys()
                 timestamp_value_pairs = []
                 for item in timestamps:
-                    timestamp_value_pairs.append(
-                        {"timestamp": item, "value": bad_json[item]}
-                    )
+                    if bad_json[item] != "0":
+                        timestamp_value_pairs.append(
+                            {"timestamp": item, "value": bad_json[item]}
+                        )
 
                 received_data["data"] = timestamp_value_pairs
                 logging.info(received_data)
