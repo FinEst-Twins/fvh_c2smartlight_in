@@ -90,7 +90,7 @@ def create_app(script_info=None):
                 producer.send(
                     topic="finest.json.c2lights.measurements",
                     key=id,
-                    value=request.get_json(),
+                    value=received_data,
                 )
 
             elif "ref" in received_data.keys():
