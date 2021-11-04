@@ -14,7 +14,7 @@ def get_env_variable(name):
 
 class Config(object):
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "super-secret-key"
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     DEBUG = True
     CSRF_ENABLED = True
 
@@ -43,17 +43,17 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "prod-secret-key"
+    SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     TESTING = False
     DEBUG = True
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key"
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     # ELASTIC_APM['DEBUG']=True
 
 
 class TestingConfig(Config):
     TESTING = True
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "test-secret-key"
+    SECRET_KEY = os.environ.get("SECRET_KEY")
