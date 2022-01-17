@@ -15,6 +15,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 if os.getenv("SENTRY_DSN"):
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[FlaskIntegration()])
 
+elastic_apm = ElasticAPM()
 
 success_response_object = {"status": "success"}
 success_code = 202
@@ -33,6 +34,9 @@ def create_app(script_info=None):
 
     logging.basicConfig(level=app.config["LOG_LEVEL"])
     logging.getLogger().setLevel(app.config["LOG_LEVEL"])
+
+    if os.getenv("USE_ELASTIC"):
+        elastic_apm.init_app(app)
 
     producer = KafkaProducer(
         bootstrap_servers=app.config["KAFKA_BROKERS"],
@@ -108,6 +112,9 @@ def create_app(script_info=None):
             producer.flush()
             logging.error("post data error", exc_info=True)
             # elastic_apm.capture_exception()
+            # capture elastic exception, if env USE_ELASTIC is set
+            if os.getenv("USE_ELASTIC"):
+                elastic_apm.capture_exception()
             return failure_response_object, failure_code
 
     @app.route("/c2/v1", methods=["POST"])
@@ -144,6 +151,9 @@ def create_app(script_info=None):
             producer.flush()
             logging.error("post data error", exc_info=True)
             # elastic_apm.capture_exception()
+            # capture elastic exception, if env USE_ELASTIC is set
+            if os.getenv("USE_ELASTIC"):
+                elastic_apm.capture_exception()           
             return failure_response_object, failure_code
 
     return app
